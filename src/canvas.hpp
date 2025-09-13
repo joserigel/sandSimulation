@@ -1,3 +1,6 @@
+#ifndef CANVAS_HPP
+#define CANVAS_HPP
+
 enum Material {
     Sand,
     Water
@@ -14,3 +17,5 @@ class Canvas {
         void setPixel(unsigned short x, unsigned short y);
         Material getPixel(unsigned short x, unsigned short y);
 };
+
+#endif

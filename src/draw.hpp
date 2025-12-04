@@ -14,10 +14,10 @@
 #include "simulation.hpp"
 using namespace std;
 
-#define DEFAULT_TICKRATE 10
-#define DEFAULT_WINDOW_WIDTH 300
-#define DEFAULT_WINDOW_HEIGHT 200
-#define DEFAULT_TICK_RATE 50
+#define SIM_TICKRATE 10
+#define WINDOW_WIDTH 300
+#define WINDOW_HEIGHT 200
+#define WINDOW_SCALING 4
 
 struct AddMaterial {
     size_t x;
@@ -34,12 +34,14 @@ struct AddMaterial {
 class Draw {
     private:
         void mouseButtonPressedHandler();
+        void keyPressedHandler();
 
         thread* simThread = NULL;
         chrono::milliseconds nextUpdate;
         chrono::milliseconds tickRate;
 
         deque<AddMaterial> addQueue;
+        Material currentMaterial = Material::Sand;
 
         sf::RenderWindow window;
         Canvas canvas;

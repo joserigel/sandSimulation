@@ -15,9 +15,9 @@
 using namespace std;
 
 #define DEFAULT_TICKRATE 10
-#define DEFAULT_WINDOW_WIDTH 800
-#define DEFAULT_WINDOW_HEIGHT 600
-#define DEFAULT_TICK_RATE 200
+#define DEFAULT_WINDOW_WIDTH 300
+#define DEFAULT_WINDOW_HEIGHT 200
+#define DEFAULT_TICK_RATE 50
 
 struct AddMaterial {
     size_t x;

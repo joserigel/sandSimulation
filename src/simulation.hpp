@@ -11,7 +11,8 @@ using namespace std;
 enum Material {
     Air,
     Sand,
-    Water
+    Water,
+    Bedrock
 };
 
 class Canvas {

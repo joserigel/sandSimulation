@@ -1,15 +1,5 @@
 #include "draw.hpp"
 
-void Draw::update() {
-    if (!addQueue.empty()) {
-        AddMaterial action = addQueue[0];
-        canvas.setMaterial(action.x, action.y, action.material);
-        addQueue.pop_front();
-    }
-    canvas.update();
-    canvas.setPixels(pixels);
-}
-
 Draw::~Draw() {
     if (simThread) {
         delete simThread;
@@ -27,6 +17,16 @@ Draw::Draw() :
     pixels(DEFAULT_WINDOW_WIDTH*DEFAULT_WINDOW_HEIGHT*4),
     canvas(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT) {}
 
+void Draw::update() {
+    if (!addQueue.empty()) {
+        AddMaterial action = addQueue[0];
+        canvas.setMaterial(action.x, action.y, action.material);
+        addQueue.pop_front();
+    }
+    canvas.update();
+    canvas.setPixels(pixels);
+}
+
 void Draw::loop() {
     while (window.isOpen()) {
         chrono::milliseconds cur = chrono::duration_cast<chrono::milliseconds>(
@@ -39,13 +39,6 @@ void Draw::loop() {
 
             update();
         }
-    }
-}
-
-void Draw::mouseButtonPressedHandler() {
-    sf::Vector2i position = sf::Mouse::getPosition(window);
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-        addQueue.emplace_back(position.x, position.y, Material::Sand);
     }
 }
 
@@ -72,4 +65,11 @@ void Draw::start() {
         window.display();
     }
     simThread->join();
+}
+
+void Draw::mouseButtonPressedHandler() {
+    sf::Vector2i position = sf::Mouse::getPosition(window);
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        addQueue.emplace_back(position.x, position.y, Material::Sand);
+    }
 }

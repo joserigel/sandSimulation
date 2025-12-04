@@ -18,14 +18,30 @@ void Canvas::update() {
     size_t width = canvas.size();
     size_t height = canvas[0].size();
 
-    // Sand
+    // Sand Gravity
     for (size_t i = 0; i < width; i++) {
-        for (size_t j = 0; j < height - 1; j++) {
-            if (canvas[i][j + 1] == Material::Sand) {
-                swap(canvas[i][j], canvas[i][j + 1]);
+        for (size_t j = 1; j < height - 1; j++) {
+            Material bottomLeft = i > 0 ? canvas[i - 1][j - 1] : Material::Bedrock;
+            Material bottomMid = canvas[i][j - 1];
+            Material bottomRight = i < width - 1 ? canvas[i + 1][j - 1] : Material::Bedrock;
+
+            if (bottomMid == Material::Air) {
+                swap(canvas[i][j - 1], canvas[i][j]);
+            } else if (bottomLeft == Material::Air && bottomRight == Material::Air) {
+                if (rand() % 100 < 50) {
+                    swap(canvas[i - 1][j - 1], canvas[i][j]);
+                } else {
+                    swap(canvas[i + 1][j - 1], canvas[i][j]);
+                }
+            } else if (bottomRight == Material::Air) {
+                swap(canvas[i + 1][j - 1], canvas[i][j]);
+            } else if (bottomLeft == Material::Air) {
+                swap(canvas[i - 1][j - 1], canvas[i][j]);
             }
         }
     }
+
+
 }
 
 void Canvas::setPixels(vector<uint8_t>& pixels) {

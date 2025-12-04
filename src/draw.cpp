@@ -1,77 +1,75 @@
 #include "draw.hpp"
 
-
-sf::RenderWindow window;
-sf::Font font("assets/JetBrainsMonoNL-Regular.ttf");
-sf::Text debugText(font);
-
-sf::Texture texture(sf::Vector2u(WIDTH, HEIGHT));
-std::vector<std::uint8_t> pixels(WIDTH * HEIGHT * 4);
-
-sf::Sprite sprite(texture);
-
-void onKeyPressed(const sf::Event::KeyPressed& keyPressed) {
-    if (keyPressed.scancode == sf::Keyboard::Scancode::Escape) {
-        window.close();
-    } 
-}
-
-void onMousePressed(const sf::Event::MouseButtonPressed& mousePressed) {
-    const int x = mousePressed.position.x;
-    const int y = mousePressed.position.y;
-    
-    if (mousePressed.button == sf::Mouse::Button::Left) {
-        debugText.setString(std::to_string(x) + ", " + std::to_string(y));
-
-        pixels.data();
+void Draw::update() {
+    if (!addQueue.empty()) {
+        AddMaterial action = addQueue[0];
+        canvas.setMaterial(action.x, action.y, action.material);
+        addQueue.pop_front();
     }
-    
-    texture.update(pixels.data());
-    texture.update(window);
+    canvas.update();
+    canvas.setPixels(pixels);
 }
 
-void onMouseReleased(const sf::Event::MouseButtonReleased& mouseReleased) {
-    debugText.setString("");
-}
-
-void loop() {
-    window.draw(debugText);
-    window.draw(sprite);
-
-}
-
-void handleEvents() {
-    window.handleEvents(
-        onKeyPressed,
-        onMousePressed,
-        onMouseReleased
-    );
-}
-
-void init(unsigned int width, unsigned int height) {
-    window = sf::RenderWindow(sf::VideoMode({width, height}), "Sand Simulation");
-    window.setPosition(sf::Vector2i(0, 0));
-
-    
-    for (int i = 0; i < width * height * 4; i+=4) {
-        pixels[i] = 255;
+Draw::~Draw() {
+    if (simThread) {
+        delete simThread;
     }
-    texture.update(pixels.data());
-    sprite.setTexture(texture);
-
 }
 
-void destroy() {
-}
+Draw::Draw() : 
+    tickRate(DEFAULT_TICKRATE), 
+    nextUpdate(0), 
+    window(
+        sf::VideoMode({DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}), 
+        "Sand",
+        sf::Style::Titlebar | sf::Style::Close
+    ),
+    pixels(DEFAULT_WINDOW_WIDTH*DEFAULT_WINDOW_HEIGHT*4),
+    canvas(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT) {}
 
-
-void Draw::run() {
-    init(WIDTH, HEIGHT);
+void Draw::loop() {
     while (window.isOpen()) {
-        window.clear();
-        handleEvents();
-        loop();
+        chrono::milliseconds cur = chrono::duration_cast<chrono::milliseconds>(
+            chrono::system_clock::now().time_since_epoch()
+        );
+        if (cur >= nextUpdate) {
+            nextUpdate = cur + this->tickRate;
+
+            mouseButtonPressedHandler();
+
+            update();
+        }
+    }
+}
+
+void Draw::mouseButtonPressedHandler() {
+    sf::Vector2i position = sf::Mouse::getPosition(window);
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        addQueue.emplace_back(position.x, position.y, Material::Sand);
+    }
+}
+
+void Draw::start() {
+    window.setPosition(sf::Vector2i(0, 0));
+    simThread = new thread(&Draw::loop, this);
+
+    sf::Texture texture(sf::Vector2u(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH));
+    sf::Sprite sprite(texture);
+    sprite.setPosition(sf::Vector2f(0,0));
+    
+    
+    while (window.isOpen()) {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
+        }
+
+        texture.update(pixels.data());
+
+        window.draw(sprite);
         window.display();
     }
-    destroy();
+    simThread->join();
 }

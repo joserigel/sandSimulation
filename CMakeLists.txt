@@ -18,6 +18,8 @@ FetchContent_MakeAvailable(SFML)
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE SAND_SIMULATION_SOURCES "src/*.hpp" "src/*.cpp")
 
+set(GCC_COVERAGE_LINK_FLAGS "-g")
+
 add_executable(sandSimulation ${SAND_SIMULATION_SOURCES})
 
 target_link_libraries(sandSimulation PRIVATE SFML::Graphics)

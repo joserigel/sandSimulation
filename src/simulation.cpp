@@ -24,18 +24,18 @@ void Canvas::update() {
             Material bottomMid = canvas[i][j - 1];
             Material bottomRight = i < width - 1 ? canvas[i + 1][j - 1] : Material::Bedrock;
 
-            if (bottomMid == Material::Air) {
+            if (bottomMid & (Material::Air | Material::Water)) {
                 swap(canvas[i][j - 1], canvas[i][j]);
             } else if (bottomLeft == Material::Air && 
-                bottomRight == Material::Air) {
+                bottomRight & (Material::Air | Material::Water)) {
                 if (rand() % 100 < 50) {
                     swap(canvas[i - 1][j - 1], canvas[i][j]);
                 } else {
                     swap(canvas[i + 1][j - 1], canvas[i][j]);
                 }
-            } else if (bottomRight == Material::Air) {
+            } else if (bottomRight & (Material::Air | Material::Water)) {
                 swap(canvas[i + 1][j - 1], canvas[i][j]);
-            } else if (bottomLeft == Material::Air) {
+            } else if (bottomLeft & (Material::Air | Material::Water)) {
                 swap(canvas[i - 1][j - 1], canvas[i][j]);
             }
 

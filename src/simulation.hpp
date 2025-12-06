@@ -9,10 +9,10 @@
 using namespace std;
 
 enum Material {
-    Air,
-    Sand,
-    Water,
-    Bedrock
+    Air     = 1,
+    Sand    = 2,
+    Water   = 4,
+    Bedrock = 8
 };
 
 class Canvas {

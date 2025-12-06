@@ -6,11 +6,6 @@ Canvas::Canvas(size_t width, size_t height) :
     canvas(width, vector<Material>(height, Material::Air)) {
 
     srand(time(NULL));
-    for (size_t i = 0; i < width; i++) {
-        for (size_t j = 0; j < height - 1; j++) {
-            canvas[i][j] = rand() % 100 < 10 ? Material::Sand : Material::Air;
-        }
-    }
 
 }
 
@@ -20,7 +15,7 @@ void Canvas::update() {
 
     // Sand Gravity
     for (size_t i = 0; i < width; i++) {
-        for (size_t j = 1; j < height - 1; j++) {
+        for (size_t j = 1; j < height; j++) {
             if (canvas[i][j] == Material::Air) {
                 continue;
             }
